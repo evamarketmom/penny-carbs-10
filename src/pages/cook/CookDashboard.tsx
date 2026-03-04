@@ -26,6 +26,7 @@ import {
   XCircle, 
   Flame, 
   UtensilsCrossed,
+  Package,
   Phone,
   MapPin,
   Users,
@@ -39,6 +40,7 @@ import { format } from 'date-fns';
 import type { CookStatus } from '@/types/cook';
 import DishRequestForm from '@/components/cook/DishRequestForm';
 import CookAllocatedDishes from '@/components/cook/CookAllocatedDishes';
+import ComboRequestForm from '@/components/cook/ComboRequestForm';
 import NewCookOrderAlert from '@/components/cook/NewCookOrderAlert';
 import NotificationPermissionBanner from '@/components/NotificationPermissionBanner';
 
@@ -272,7 +274,7 @@ const CookDashboard: React.FC = () => {
 
         {/* Orders Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-4">
+          <TabsList className="w-full grid grid-cols-5">
             <TabsTrigger value="active" className="gap-1">
               <Clock className="h-4 w-4" />
               <span className="hidden sm:inline">Active</span>
@@ -280,6 +282,10 @@ const CookDashboard: React.FC = () => {
             <TabsTrigger value="dishes" className="gap-1">
               <UtensilsCrossed className="h-4 w-4" />
               <span className="hidden sm:inline">Dishes</span>
+            </TabsTrigger>
+            <TabsTrigger value="combos" className="gap-1">
+              <Package className="h-4 w-4" />
+              <span className="hidden sm:inline">Combos</span>
             </TabsTrigger>
             <TabsTrigger value="history" className="gap-1">
               <History className="h-4 w-4" />
@@ -426,6 +432,11 @@ const CookDashboard: React.FC = () => {
           <TabsContent value="dishes" className="space-y-4 mt-4">
             <CookAllocatedDishes />
             <DishRequestForm />
+          </TabsContent>
+
+          {/* Combos Tab */}
+          <TabsContent value="combos" className="space-y-4 mt-4">
+            {profile && <ComboRequestForm cookId={profile.id} />}
           </TabsContent>
 
           {/* Order History Tab */}
