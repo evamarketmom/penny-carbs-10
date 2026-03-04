@@ -37,11 +37,14 @@ import {
   Percent,
   Building2,
   ChefHat,
-  User
+  User,
+  UtensilsCrossed,
+  Package
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import AdminNavbar from '@/components/admin/AdminNavbar';
 import ImageUpload from '@/components/admin/ImageUpload';
+import ComboFoodsTab from '@/components/admin/ComboFoodsTab';
 import { calculatePlatformMargin } from '@/lib/priceUtils';
 
 // Helper to calculate customer price
@@ -75,6 +78,7 @@ const AdminItems: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterServiceType, setFilterServiceType] = useState<string>('all');
+  const [activeMainTab, setActiveMainTab] = useState<'items' | 'combos'>('items');
   
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -386,42 +390,68 @@ const AdminItems: React.FC = () => {
               <Plus className="mr-2 h-4 w-4" />
               Add Category
             </Button>
-            <Button size="sm" onClick={() => handleOpenDialog()}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Item
-            </Button>
+            {activeMainTab === 'items' && (
+              <Button size="sm" onClick={() => handleOpenDialog()}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Item
+              </Button>
+            )}
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="mt-4 flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search items..."
-              className="pl-10"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <Select value={filterServiceType} onValueChange={setFilterServiceType}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="All Types" />
-            </SelectTrigger>
-            <SelectContent className="bg-popover">
-              <SelectItem value="all">All Types</SelectItem>
-              {serviceTypes.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
-                  {type.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Tabs for Items/Combos */}
+        <div className="mt-3 flex gap-2">
+          <Button
+            variant={activeMainTab === 'items' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveMainTab('items')}
+          >
+            <UtensilsCrossed className="h-4 w-4 mr-1" />
+            Items
+          </Button>
+          <Button
+            variant={activeMainTab === 'combos' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setActiveMainTab('combos')}
+          >
+            <Package className="h-4 w-4 mr-1" />
+            Combos
+          </Button>
         </div>
+
+        {/* Filters - only for items tab */}
+        {activeMainTab === 'items' && (
+          <div className="mt-3 flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search items..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Select value={filterServiceType} onValueChange={setFilterServiceType}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent className="bg-popover">
+                <SelectItem value="all">All Types</SelectItem>
+                {serviceTypes.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
       </div>
 
       <main className="p-4">
-        {isLoading ? (
+        {activeMainTab === 'combos' ? (
+          <ComboFoodsTab />
+        ) : isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-24 rounded-xl" />

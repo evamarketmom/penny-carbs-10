@@ -197,6 +197,110 @@ export type Database = {
         }
         Relationships: []
       }
+      combo_food_items: {
+        Row: {
+          combo_id: string
+          created_at: string
+          food_item_id: string
+          id: string
+          quantity: number
+        }
+        Insert: {
+          combo_id: string
+          created_at?: string
+          food_item_id: string
+          id?: string
+          quantity?: number
+        }
+        Update: {
+          combo_id?: string
+          created_at?: string
+          food_item_id?: string
+          id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combo_food_items_combo_id_fkey"
+            columns: ["combo_id"]
+            isOneToOne: false
+            referencedRelation: "combo_foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combo_food_items_food_item_id_fkey"
+            columns: ["food_item_id"]
+            isOneToOne: false
+            referencedRelation: "food_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      combo_foods: {
+        Row: {
+          combo_price: number | null
+          cook_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          discount_type: string
+          discount_value: number
+          division_ids: string[]
+          id: string
+          image_url: string | null
+          is_active: boolean
+          is_available: boolean
+          is_vegetarian: boolean
+          name: string
+          service_types: string[]
+          updated_at: string
+        }
+        Insert: {
+          combo_price?: number | null
+          cook_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          division_ids?: string[]
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_available?: boolean
+          is_vegetarian?: boolean
+          name: string
+          service_types?: string[]
+          updated_at?: string
+        }
+        Update: {
+          combo_price?: number | null
+          cook_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          division_ids?: string[]
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_available?: boolean
+          is_vegetarian?: boolean
+          name?: string
+          service_types?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combo_foods_cook_id_fkey"
+            columns: ["cook_id"]
+            isOneToOne: false
+            referencedRelation: "cooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       commission_rules: {
         Row: {
           commission_percent: number
@@ -238,6 +342,111 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      cook_combo_request_items: {
+        Row: {
+          created_at: string
+          food_item_id: string
+          id: string
+          quantity: number
+          request_id: string
+        }
+        Insert: {
+          created_at?: string
+          food_item_id: string
+          id?: string
+          quantity?: number
+          request_id: string
+        }
+        Update: {
+          created_at?: string
+          food_item_id?: string
+          id?: string
+          quantity?: number
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cook_combo_request_items_food_item_id_fkey"
+            columns: ["food_item_id"]
+            isOneToOne: false
+            referencedRelation: "food_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cook_combo_request_items_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "cook_combo_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cook_combo_requests: {
+        Row: {
+          admin_notes: string | null
+          combo_description: string | null
+          combo_name: string
+          combo_price: number | null
+          cook_id: string
+          created_at: string
+          created_combo_id: string | null
+          discount_type: string
+          discount_value: number
+          id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          combo_description?: string | null
+          combo_name: string
+          combo_price?: number | null
+          cook_id: string
+          created_at?: string
+          created_combo_id?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          combo_description?: string | null
+          combo_name?: string
+          combo_price?: number | null
+          cook_id?: string
+          created_at?: string
+          created_combo_id?: string | null
+          discount_type?: string
+          discount_value?: number
+          id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cook_combo_requests_cook_id_fkey"
+            columns: ["cook_id"]
+            isOneToOne: false
+            referencedRelation: "cooks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cook_combo_requests_created_combo_id_fkey"
+            columns: ["created_combo_id"]
+            isOneToOne: false
+            referencedRelation: "combo_foods"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       cook_dish_requests: {
         Row: {
