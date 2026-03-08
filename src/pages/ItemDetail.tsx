@@ -186,6 +186,7 @@ const ItemDetail: React.FC = () => {
 
   // For homemade items with multiple cooks, require cook selection
   const needsCookSelection = isHomemade && availableCooks.length > 1 && !selectedCookId;
+  const noCooksAvailable = isHomemade && availableCooks.length === 0 && !isLoading;
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -297,7 +298,12 @@ const ItemDetail: React.FC = () => {
 
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 border-t bg-card p-4 shadow-lg">
-        {isComingSoon ? (
+        {noCooksAvailable ? (
+          <Button className="w-full h-12 text-base" disabled>
+            <Lock className="mr-2 h-5 w-5" />
+            No Cooks Available
+          </Button>
+        ) : isComingSoon ? (
           <Button className="w-full h-12 text-base" disabled>
             <Lock className="mr-2 h-5 w-5" />
             Coming Soon
