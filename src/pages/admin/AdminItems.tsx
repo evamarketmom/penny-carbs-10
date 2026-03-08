@@ -862,32 +862,85 @@ const AdminItems: React.FC = () => {
                 </div>
               </div>
 
-              {formData.price && parseFloat(formData.platform_margin_value || '0') > 0 && (
-                <div className="rounded-md bg-muted p-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Cook receives:</span>
-                    <span className="font-medium">₹{parseFloat(formData.price).toLocaleString()}</span>
+              {formData.price && parseFloat(formData.platform_margin_value || '0') > 0 && (() => {
+                const basePrice = parseFloat(formData.price);
+                const marginVal = parseFloat(formData.platform_margin_value);
+                const calculatedMargin = formData.platform_margin_type === 'percent' 
+                  ? basePrice * marginVal / 100 
+                  : marginVal;
+                const calculatedCustomerPrice = basePrice + calculatedMargin;
+                
+                return (
+                  <div className="rounded-md bg-muted p-3 text-sm space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Cook receives:</span>
+                      <span className="font-medium">₹{basePrice.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Platform margin:</span>
+                      <span className="font-medium text-primary">
+                        +₹{calculatedMargin.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between border-t border-border pt-2">
+                      <span className="font-medium">Customer pays:</span>
+                      <span className="font-bold text-success">
+                        ₹{calculatedCustomerPrice.toLocaleString()}
+                      </span>
+                    </div>
+
+                    {/* Manual Round Off */}
+                    <div className="border-t border-border pt-2 space-y-2">
+                      <Label className="text-xs text-muted-foreground">Round off customer price</Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="number"
+                          min={basePrice}
+                          placeholder={Math.round(calculatedCustomerPrice).toString()}
+                          className="h-8 text-sm"
+                          defaultValue=""
+                          onChange={(e) => {
+                            const roundedPrice = parseFloat(e.target.value);
+                            if (!isNaN(roundedPrice) && roundedPrice >= basePrice) {
+                              const newMargin = roundedPrice - basePrice;
+                              setFormData(prev => ({
+                                ...prev,
+                                platform_margin_type: 'fixed',
+                                platform_margin_value: newMargin.toString(),
+                              }));
+                            }
+                          }}
+                        />
+                        <div className="flex gap-1 flex-shrink-0">
+                          {[1, 5, 10].map((r) => {
+                            const rounded = Math.ceil(calculatedCustomerPrice / r) * r;
+                            if (rounded === calculatedCustomerPrice) return null;
+                            return (
+                              <Button
+                                key={r}
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-8 text-xs px-2"
+                                onClick={() => {
+                                  const newMargin = rounded - basePrice;
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    platform_margin_type: 'fixed',
+                                    platform_margin_value: newMargin.toString(),
+                                  }));
+                                }}
+                              >
+                                ₹{rounded}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Platform margin:</span>
-                    <span className="font-medium text-primary">
-                      +₹{formData.platform_margin_type === 'percent' 
-                        ? (parseFloat(formData.price) * parseFloat(formData.platform_margin_value) / 100).toFixed(2)
-                        : parseFloat(formData.platform_margin_value).toLocaleString()
-                      }
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-t border-border pt-2 mt-2">
-                    <span className="font-medium">Customer pays:</span>
-                    <span className="font-bold text-success">
-                      ₹{(parseFloat(formData.price) + (formData.platform_margin_type === 'percent' 
-                        ? (parseFloat(formData.price) * parseFloat(formData.platform_margin_value) / 100)
-                        : parseFloat(formData.platform_margin_value)
-                      )).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
             </div>
 
             <div className="flex items-center justify-between">
