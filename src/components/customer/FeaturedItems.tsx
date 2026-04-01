@@ -51,7 +51,7 @@ const FeaturedItems: React.FC = () => {
   const { addToCart } = useCart();
   const { selectedPanchayat } = useLocation();
   const { requireAuth, showLoginDialog, setShowLoginDialog, onLoginSuccess } = useAuthCheck();
-  const { data: allocatedIds } = useCookAllocatedItemIds();
+  const { data: allocatedIds } = useCookAllocatedItemIds(selectedPanchayat?.id);
   const { lowestCookPrices } = useLowestCookPrices();
 
   const { data: rawItems, isLoading } = useQuery({

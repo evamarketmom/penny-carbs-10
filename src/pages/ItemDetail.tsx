@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
+import { useLocation } from '@/contexts/LocationContext';
 import type { FoodItemWithImages } from '@/types/database';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,6 +28,7 @@ const ItemDetail: React.FC = () => {
   const [quantity, setQuantity] = useState(1);
   const [availableCooks, setAvailableCooks] = useState<CookOption[]>([]);
   const [selectedCookId, setSelectedCookId] = useState<string | null>(null);
+  const { selectedPanchayat } = useLocation();
 
   const cartItem = cartItems.find(ci => ci.food_item_id === itemId);
   const currentCartQuantity = cartItem?.quantity || 0;
@@ -60,7 +62,7 @@ const ItemDetail: React.FC = () => {
               id,
               cook_id,
               custom_price,
-              cooks!inner(id, kitchen_name, rating, total_orders, is_active, is_available)
+              cooks!inner(id, kitchen_name, rating, total_orders, is_active, is_available, panchayat_id, assigned_panchayat_ids)
             `)
             .eq('food_item_id', itemId);
 
@@ -83,7 +85,14 @@ const ItemDetail: React.FC = () => {
             }
 
             const activeCooks = cookDishes
-              .filter((cd: any) => cd.cooks?.is_active && cd.cooks?.is_available)
+              .filter((cd: any) => {
+                if (!cd.cooks?.is_active || !cd.cooks?.is_available) return false;
+                if (selectedPanchayat?.id) {
+                  const assignedPanchayats: string[] = cd.cooks.assigned_panchayat_ids || [];
+                  return assignedPanchayats.includes(selectedPanchayat.id) || cd.cooks.panchayat_id === selectedPanchayat.id;
+                }
+                return true;
+              })
               .map((cd: any) => ({
                 cook_id: cd.cook_id,
                 kitchen_name: cd.cooks.kitchen_name,

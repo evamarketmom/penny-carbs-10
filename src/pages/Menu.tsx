@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useCart } from '@/contexts/CartContext';
 import { useAuthCheck } from '@/hooks/useAuthCheck';
+import { useLocation } from '@/contexts/LocationContext';
 import CustomerLoginDialog from '@/components/customer/CustomerLoginDialog';
 import type { FoodItemWithImages, ServiceType, FoodCategory } from '@/types/database';
 import { Button } from '@/components/ui/button';
@@ -49,7 +50,8 @@ const Menu: React.FC = () => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { requireAuth, showLoginDialog, setShowLoginDialog, onLoginSuccess } = useAuthCheck();
-  const { data: allocatedIds } = useCookAllocatedItemIds();
+  const { selectedPanchayat } = useLocation();
+  const { data: allocatedIds } = useCookAllocatedItemIds(selectedPanchayat?.id);
   const { lowestCookPrices } = useLowestCookPrices();
   
   const [items, setItems] = useState<FoodItemWithImages[]>([]);

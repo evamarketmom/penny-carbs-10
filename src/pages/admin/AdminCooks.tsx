@@ -40,7 +40,8 @@ const cookSchema = z.object({
     .min(10, 'Mobile number must be 10 digits')
     .max(10, 'Mobile number must be 10 digits')
     .regex(/^\d+$/, 'Mobile number must contain only digits'),
-  panchayatId: z.string().min(1, 'Please select a panchayat'),
+  panchayatId: z.string().min(1, 'Please select a primary panchayat'),
+  assignedPanchayatIds: z.array(z.string()).min(1, 'Select at least one panchayat'),
   allowedOrderTypes: z.array(z.string()).min(1, 'Select at least one order type'),
   userId: z.string().min(1, 'Please select a staff member first'),
 });
@@ -195,6 +196,7 @@ const AdminCooks: React.FC = () => {
       kitchenName: '',
       mobileNumber: '',
       panchayatId: '',
+      assignedPanchayatIds: [],
       allowedOrderTypes: ['indoor_events', 'cloud_kitchen', 'homemade'],
       userId: '',
     },
@@ -249,6 +251,7 @@ const AdminCooks: React.FC = () => {
     form.setValue('kitchenName', staff.name + "'s Kitchen");
     if (staff.panchayat_id) {
       form.setValue('panchayatId', staff.panchayat_id);
+      form.setValue('assignedPanchayatIds', [staff.panchayat_id]);
     }
     form.setValue('userId', staff.user_id);
     setSearchResults([]);
@@ -305,6 +308,7 @@ const AdminCooks: React.FC = () => {
           kitchen_name: data.kitchenName,
           mobile_number: data.mobileNumber,
           panchayat_id: data.panchayatId,
+          assigned_panchayat_ids: data.assignedPanchayatIds,
           allowed_order_types: data.allowedOrderTypes,
           user_id: data.userId,
           created_by: user?.id,
@@ -562,11 +566,18 @@ const AdminCooks: React.FC = () => {
                     name="panchayatId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Panchayat</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <FormLabel>Primary Panchayat</FormLabel>
+                        <Select onValueChange={(value) => {
+                          field.onChange(value);
+                          // Auto-add to assigned list if not present
+                          const current = form.getValues('assignedPanchayatIds');
+                          if (!current.includes(value)) {
+                            form.setValue('assignedPanchayatIds', [...current, value]);
+                          }
+                        }} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select panchayat" />
+                              <SelectValue placeholder="Select primary panchayat" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="bg-popover">
@@ -577,6 +588,38 @@ const AdminCooks: React.FC = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="assignedPanchayatIds"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Assigned Panchayats (Multi-select)</FormLabel>
+                        <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">
+                          {panchayats.map((p) => (
+                            <div key={p.id} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`panchayat-${p.id}`}
+                                checked={form.watch('assignedPanchayatIds').includes(p.id)}
+                                onCheckedChange={(checked) => {
+                                  const current = form.getValues('assignedPanchayatIds');
+                                  if (checked) {
+                                    form.setValue('assignedPanchayatIds', [...current, p.id]);
+                                  } else {
+                                    form.setValue('assignedPanchayatIds', current.filter(id => id !== p.id));
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`panchayat-${p.id}`} className="text-sm">
+                                {p.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -681,6 +724,11 @@ const AdminCooks: React.FC = () => {
                             <p className="text-sm text-muted-foreground flex items-center gap-1">
                               <MapPin className="h-3 w-3" />
                               {cook.panchayat.name}
+                              {cook.assigned_panchayat_ids?.length > 1 && (
+                                <Badge variant="outline" className="text-xs ml-1">
+                                  +{cook.assigned_panchayat_ids.length - 1} more
+                                </Badge>
+                              )}
                             </p>
                           )}
                         </div>

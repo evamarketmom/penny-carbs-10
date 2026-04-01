@@ -6,6 +6,7 @@ export interface Cook {
   kitchen_name: string;
   mobile_number: string;
   panchayat_id: string | null;
+  assigned_panchayat_ids: string[];
   allowed_order_types: string[];
   is_active: boolean;
   is_available: boolean;
