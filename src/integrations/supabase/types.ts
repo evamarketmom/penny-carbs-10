@@ -620,6 +620,7 @@ export type Database = {
       cooks: {
         Row: {
           allowed_order_types: string[]
+          assigned_panchayat_ids: string[]
           created_at: string
           created_by: string | null
           id: string
@@ -636,6 +637,7 @@ export type Database = {
         }
         Insert: {
           allowed_order_types?: string[]
+          assigned_panchayat_ids?: string[]
           created_at?: string
           created_by?: string | null
           id?: string
@@ -652,6 +654,7 @@ export type Database = {
         }
         Update: {
           allowed_order_types?: string[]
+          assigned_panchayat_ids?: string[]
           created_at?: string
           created_by?: string | null
           id?: string
