@@ -63,10 +63,12 @@ const PopularItems: React.FC<PopularItemsProps> = ({
   const { data: allocatedIds, isLoading: allocatedIdsLoading } = useCookAllocatedItemIds(selectedPanchayat?.id);
   const { lowestCookPrices } = useLowestCookPrices();
   const { data: activeSlotIds } = useActiveCloudKitchenSlotIds();
+  const [items, setItems] = useState<FoodItemWithImages[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // For homemade, wait for allocatedIds to load before fetching
   const isHomemade = serviceType === 'homemade';
+  const isCloudKitchenType = serviceType === 'cloud_kitchen';
   const allocatedIdsReady = !isHomemade || !allocatedIdsLoading;
 
   useEffect(() => {
@@ -92,10 +94,17 @@ const PopularItems: React.FC<PopularItemsProps> = ({
         const { data, error } = await query.limit(limit);
 
         if (error) throw error;
-        // For homemade items, only show those allocated to an active cook
         let filtered = data as FoodItemWithImages[];
+        // For homemade items, only show those allocated to an active cook
         if (isHomemade && allocatedIds) {
           filtered = filtered.filter(item => allocatedIds.has(item.id));
+        }
+        // For cloud kitchen items, only show those from active divisions
+        if (isCloudKitchenType && activeSlotIds) {
+          filtered = filtered.filter(item => {
+            const slotId = (item as any).cloud_kitchen_slot_id;
+            return !slotId || activeSlotIds.has(slotId);
+          });
         }
         setItems(filtered);
       } catch (error) {
