@@ -308,6 +308,7 @@ const AdminCooks: React.FC = () => {
           kitchen_name: data.kitchenName,
           mobile_number: data.mobileNumber,
           panchayat_id: data.panchayatId,
+          assigned_panchayat_ids: data.assignedPanchayatIds,
           allowed_order_types: data.allowedOrderTypes,
           user_id: data.userId,
           created_by: user?.id,
