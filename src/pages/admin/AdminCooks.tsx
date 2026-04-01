@@ -566,11 +566,18 @@ const AdminCooks: React.FC = () => {
                     name="panchayatId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Panchayat</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
+                        <FormLabel>Primary Panchayat</FormLabel>
+                        <Select onValueChange={(value) => {
+                          field.onChange(value);
+                          // Auto-add to assigned list if not present
+                          const current = form.getValues('assignedPanchayatIds');
+                          if (!current.includes(value)) {
+                            form.setValue('assignedPanchayatIds', [...current, value]);
+                          }
+                        }} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select panchayat" />
+                              <SelectValue placeholder="Select primary panchayat" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="bg-popover">
@@ -581,6 +588,38 @@ const AdminCooks: React.FC = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="assignedPanchayatIds"
+                    render={() => (
+                      <FormItem>
+                        <FormLabel>Assigned Panchayats (Multi-select)</FormLabel>
+                        <div className="space-y-2 max-h-40 overflow-y-auto border rounded-md p-2">
+                          {panchayats.map((p) => (
+                            <div key={p.id} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`panchayat-${p.id}`}
+                                checked={form.watch('assignedPanchayatIds').includes(p.id)}
+                                onCheckedChange={(checked) => {
+                                  const current = form.getValues('assignedPanchayatIds');
+                                  if (checked) {
+                                    form.setValue('assignedPanchayatIds', [...current, p.id]);
+                                  } else {
+                                    form.setValue('assignedPanchayatIds', current.filter(id => id !== p.id));
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`panchayat-${p.id}`} className="text-sm">
+                                {p.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}
