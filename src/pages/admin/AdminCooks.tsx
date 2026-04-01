@@ -85,6 +85,19 @@ const AdminCooks: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('cooks');
   
+  // Edit cook state
+  const [editCook, setEditCook] = useState<Cook | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+  const [editForm, setEditForm] = useState({
+    kitchen_name: '',
+    mobile_number: '',
+    panchayat_id: '',
+    assigned_panchayat_ids: [] as string[],
+    allowed_order_types: [] as string[],
+    is_active: true,
+  });
+  
   // Staff search state
   const [searchMobile, setSearchMobile] = useState('');
   const [isSearching, setIsSearching] = useState(false);
