@@ -27,6 +27,7 @@ const ItemDetail: React.FC = () => {
   const [item, setItem] = useState<FoodItemWithImages | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [copied, setCopied] = useState(false);
   const [availableCooks, setAvailableCooks] = useState<CookOption[]>([]);
   const [selectedCookId, setSelectedCookId] = useState<string | null>(null);
   const { selectedPanchayat } = useLocation();
