@@ -215,7 +215,7 @@ const AdminBanners: React.FC = () => {
                     placeholder="https://example.com/banner.jpg"
                   />
                   {formData.image_url && (
-                    <div className="mt-2 aspect-video overflow-hidden rounded-lg border bg-muted">
+                    <div className="mt-2 aspect-[3/4] max-h-64 overflow-hidden rounded-lg border bg-muted">
                       <img src={formData.image_url} alt="Preview" className="h-full w-full object-cover" />
                     </div>
                   )}
