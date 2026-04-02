@@ -29,6 +29,7 @@ interface CartItem {
 }
 
 const CloudKitchenOrder: React.FC = () => {
+  useServiceModuleGuard('cloud_kitchen');
   const navigate = useNavigate();
   const [selectedDivision, setSelectedDivision] = useState<ActiveDivision | null>(null);
   const [cart, setCart] = useState<Record<string, CartItem>>({});
