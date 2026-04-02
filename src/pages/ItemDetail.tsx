@@ -14,7 +14,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { ArrowLeft, Plus, Minus, Clock, Leaf, ShoppingCart, CalendarHeart, Lock } from 'lucide-react';
+import { ArrowLeft, Plus, Minus, Clock, Leaf, ShoppingCart, CalendarHeart, Lock, Share2, Copy, Check } from 'lucide-react';
+import { toast } from 'sonner';
 import { calculatePlatformMargin } from '@/lib/priceUtils';
 import CookSelector, { type CookOption } from '@/components/customer/CookSelector';
 
